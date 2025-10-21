@@ -83,7 +83,8 @@ class _GaleryTabsState extends State<GaleryTabs> {
     GalleryItem(
       file: "assets/images/ski.jpeg",
       title: "Adrenalin Pur!",
-      description: '''Dies ist ein Blindtext. Er dient nur als Platzhalter und zeigt, wie ein längerer Textblock im Layout wirkt. An ihm kann man sehen, ob alle Buchstaben dargestellt werden und wie Absätze aussehen.
+      description:
+          '''Dies ist ein Blindtext. Er dient nur als Platzhalter und zeigt, wie ein längerer Textblock im Layout wirkt. An ihm kann man sehen, ob alle Buchstaben dargestellt werden und wie Absätze aussehen.
 
 Designer und Entwickler nutzen Blindtexte, um Schriftarten, Abstände und Zeilenumbrüche zu testen. Dabei geht es nicht um Sinn oder Verständlichkeit, sondern um das Erscheinungsbild.
 
@@ -105,10 +106,10 @@ Ein Vorteil von deutschem Blindtext ist, dass er typische Wortlängen und Silben
   ];
 
   String get _title => switch (_currentIndex) {
-        0 => (_selected == null) ? "Galerie" : _selected!.title,
-        1 => "About",
-        _ => "App",
-      };
+    0 => (_selected == null) ? "Galerie" : _selected!.title,
+    1 => "About",
+    _ => "App",
+  };
 
   void _openDetail(GalleryItem item) {
     setState(() => _selected = item);
@@ -133,7 +134,6 @@ Ein Vorteil von deutschem Blindtext ist, dass er typische Wortlängen und Silben
           return InkWell(
             onTap: () => _openDetail(item),
             child: ClipRRect(
-              
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 decoration: BoxDecoration(
@@ -158,8 +158,11 @@ Ein Vorteil von deutschem Blindtext ist, dass er typische Wortlängen und Silben
                         bottomRight: Radius.circular(12),
                       ),
                     ),
-                    
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 8,
+                    ),
                     child: Text(
                       item.title,
                       style: const TextStyle(
@@ -180,69 +183,63 @@ Ein Vorteil von deutschem Blindtext ist, dass er typische Wortlängen und Silben
   }
 
   Widget _buildDetail(GalleryItem item) {
+    String formatDate(DateTime d) {
+      final day = d.day.toString().padLeft(2, '0');
+      final month = d.month.toString().padLeft(2, '0');
+      final year = d.year.toString();
+      return "$day.$month.$year";
+    }
 
-  String formatDate(DateTime d) {
-    final day = d.day.toString().padLeft(2, '0');
-    final month = d.month.toString().padLeft(2, '0');
-    final year = d.year.toString();
-    return "$day.$month.$year";
-  }
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Image.asset(
+              item.file,
+              fit: BoxFit.fitWidth,
+              width: double.infinity,
+            ),
 
-  return SafeArea(
-    child: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          
-          Image.asset(
-            item.file,
-            fit: BoxFit.fitWidth,
-            width: double.infinity,
-          ),
+            const SizedBox(height: 16),
 
-          const SizedBox(height: 16),
-          
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              item.title,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                item.title,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              formatDate(item.date),
-              //'${item.date.day}.${item.date.month}.${item.date.year}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                formatDate(item.date),
+                //'${item.date.day}.${item.date.month}.${item.date.year}',
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ),
-          ),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              item.description,
-              textAlign: TextAlign.justify,
-              style: const TextStyle(fontSize: 16, height: 1.4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                item.description,
+                textAlign: TextAlign.justify,
+                style: const TextStyle(fontSize: 16, height: 1.4),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildGallery() {
     if (_selected == null) return _buildGalleryGrid();
@@ -293,26 +290,19 @@ Mein Anspruch ist es, mit meinen Bildern nicht nur zu dokumentieren, sondern auc
 
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      _buildGallery(),
-      _buildAbout(),
-    ];
+    final screens = [_buildGallery(), _buildAbout()];
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (_currentIndex == 0 && _selected != null) {
+    return PopScope(
+      canPop: !(_currentIndex == 0 && _selected != null),
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _currentIndex == 0 && _selected != null) {
           _closeDetail();
-          return false;
         }
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xFF66001F),
-          title: Text(
-            _title,
-            style: const TextStyle(color: Colors.white),
-          ),
+          title: Text(_title, style: const TextStyle(color: Colors.white)),
           leading: (_currentIndex == 0 && _selected != null)
               ? IconButton(
                   onPressed: _closeDetail,
@@ -320,10 +310,7 @@ Mein Anspruch ist es, mit meinen Bildern nicht nur zu dokumentieren, sondern auc
                 )
               : null,
         ),
-        body: IndexedStack(
-          index: _currentIndex,
-          children: screens,
-        ),
+        body: IndexedStack(index: _currentIndex, children: screens),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _currentIndex,
           onDestinationSelected: (index) {
